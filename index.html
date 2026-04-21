@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnackSearch - Asian Snack Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  >
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fff9f2;
+      --bg-accent: #ffe5ef;
+      --card: #fffdf8;
+      --ink: #5b3553;
+      --muted: #8b6a82;
+      --accent: #ff8fb1;
+      --accent-dark: #f6739e;
+      --line: #ffd6e6;
+      --danger: #e15a7a;
+      --yellow: #fff2a8;
+      --mint: #d7f7e7;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Nunito", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 10% 5%, #ffe9b8 0 12%, transparent 12%),
+        radial-gradient(circle at 92% 8%, #ffd9eb 0 12%, transparent 12%),
+        radial-gradient(circle at 88% 92%, #dff8ee 0 14%, transparent 14%),
+        var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(1100px, 92vw);
+      margin: 0 auto;
+      padding: 1rem 0 3rem;
+    }
+
+    header {
+      padding: 1rem 0 0.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Baloo 2", "Nunito", sans-serif;
+      font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+      color: #bf4c83;
+    }
+
+    .subtitle {
+      margin: 0.5rem 0 0;
+      color: var(--muted);
+    }
+
+    .search-row {
+      margin-top: 1.2rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem;
+    }
+
+    input[type="search"] {
+      width: 100%;
+      padding: 0.8rem 0.9rem;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      font-size: 1rem;
+      background: #fff;
+      box-shadow: 0 6px 14px rgba(255, 145, 187, 0.12);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+    }
+
+    .chip {
+      background: #fff5fa;
+      border: 1px solid #ffc6dc;
+      border-radius: 999px;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #974a75;
+    }
+
+    .chip.active {
+      background: var(--yellow);
+      border-color: #f8d84f;
+      color: #7b5a10;
+      font-weight: 600;
+    }
+
+    .meta {
+      margin-top: 0.8rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .grid {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.9rem;
+      max-height: 62vh;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-radius: 22px;
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      box-shadow: 0 10px 22px rgba(255, 145, 187, 0.15);
+    }
+
+    .badge {
+      width: fit-content;
+      font-size: 0.78rem;
+      padding: 0.22rem 0.5rem;
+      border-radius: 999px;
+      background: var(--mint);
+      color: #296448;
+    }
+
+    .snack-emoji {
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, #fff4ba, #ffd9e9);
+      border: 1px solid #ffe1ef;
+      height: 86px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .name {
+      margin: 0;
+      font-size: 1.02rem;
+      color: #7f3a62;
+    }
+
+    .desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.35;
+      min-height: 2.3em;
+    }
+
+    .map-btn {
+      margin-top: auto;
+      border: none;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #fff;
+      padding: 0.65rem 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(255, 143, 177, 0.35);
+    }
+
+    .map-btn:hover {
+      background: var(--accent-dark);
+    }
+
+    .empty {
+      margin-top: 2rem;
+      text-align: center;
+      color: var(--muted);
+      display: none;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(91, 53, 83, 0.42);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 999;
+    }
+
+    .modal {
+      width: min(920px, 95vw);
+      max-height: 88vh;
+      overflow: hidden;
+      border-radius: 20px;
+      background: #fffdf7;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .modal-header {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.08rem;
+    }
+
+    .close-btn {
+      border: none;
+      background: #ffe7ef;
+      color: var(--danger);
+      border-radius: 10px;
+      cursor: pointer;
+      padding: 0.5rem 0.7rem;
+      font-weight: 700;
+    }
+
+    .modal-body {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      min-height: 420px;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+    }
+
+    .store-panel {
+      border-left: 1px solid var(--line);
+      padding: 0.8rem;
+      overflow: auto;
+      background: #fff8fc;
+    }
+
+    .store-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.65rem;
+      margin-bottom: 0.6rem;
+      background: #fff;
+      box-shadow: 0 5px 12px rgba(248, 170, 200, 0.18);
+    }
+
+    .store-card p {
+      margin: 0.2rem 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 900px) {
+      .modal-body {
+        grid-template-columns: 1fr;
+      }
+      .store-panel {
+        border-left: none;
+        border-top: 1px solid var(--line);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>SnackSearch</h1>
+      <p class="subtitle">Find popular Asian snacks, browse products, and open a map to locate nearby stores carrying each item.</p>
+    </header>
+
+    <section aria-label="Snack search">
+      <div class="search-row">
+        <input id="searchInput" type="search" placeholder="Search snacks by name, flavor, country, or tag..." aria-label="Search snacks">
+      </div>
+      <div class="chips" id="categoryChips"></div>
+      <p class="meta" id="resultCount"></p>
+    </section>
+
+    <section class="grid" id="snackGrid" aria-label="Snack results"></section>
+    <p class="empty" id="emptyState">No snacks found. Try another search or category.</p>
+  </div>
+
+  <div class="overlay" id="mapOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Snack map</h2>
+        <button class="close-btn" id="closeModal" type="button" aria-label="Close map">Close</button>
+      </div>
+      <div class="modal-body">
+        <div id="map"></div>
+        <aside class="store-panel" id="storePanel"></aside>
+      </div>
+    </div>
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script>
+    const snacks = [
+      { id: 1, name: "Shrimp Chips", brand: "Calbee", country: "Japan", category: "Savory", tags: ["crispy", "seafood"], description: "Light, airy chips with a savory shrimp flavor.", emoji: "🦐" },
+      { id: 2, name: "Pocky Strawberry", brand: "Glico", country: "Japan", category: "Sweet", tags: ["chocolate", "strawberry"], description: "Crunchy biscuit sticks coated in strawberry cream.", emoji: "🍓" },
+      { id: 3, name: "Mala Potato Chips", brand: "Lay's", country: "China", category: "Spicy", tags: ["sichuan", "numbing"], description: "Sichuan peppercorn heat with a numbing kick.", emoji: "🌶️" },
+      { id: 4, name: "Honey Butter Chips", brand: "Haitai", country: "Korea", category: "Sweet", tags: ["potato", "honey"], description: "Sweet and salty chips with buttery honey flavor.", emoji: "🍯" },
+      { id: 5, name: "Wasabi Peas", brand: "Kasugai", country: "Japan", category: "Spicy", tags: ["peas", "wasabi"], description: "Crunchy green peas with sharp wasabi heat.", emoji: "🫛" },
+      { id: 6, name: "Seaweed Rice Crackers", brand: "Want Want", country: "Taiwan", category: "Savory", tags: ["rice", "seaweed"], description: "Crisp rice crackers wrapped in umami seaweed.", emoji: "🍘" },
+      { id: 7, name: "White Rabbit Candy", brand: "Guan Sheng Yuan", country: "China", category: "Sweet", tags: ["milk", "chewy"], description: "Classic creamy milk candy with chewy texture.", emoji: "🍬" },
+      { id: 8, name: "Tteokbokki Snack Sticks", brand: "Nongshim", country: "Korea", category: "Spicy", tags: ["rice cake", "gochujang"], description: "Crunchy snack sticks inspired by tteokbokki sauce.", emoji: "🥢" },
+      { id: 9, name: "Mochi Ice Cream Bites", brand: "Bubbies", country: "Japan", category: "Frozen", tags: ["mochi", "dessert"], description: "Soft mochi wrapped around creamy ice cream centers.", emoji: "🍡" },
+      { id: 10, name: "Tamarind Candy", brand: "Tao Kae Noi", country: "Thailand", category: "Sweet", tags: ["fruit", "tangy"], description: "Sweet-and-tangy tamarind bites with a chewy finish.", emoji: "🍭" }
+    ];
+
+    const stores = [
+      { name: "Sunrise Asian Market", lat: 37.7842, lng: -122.4096, distanceMi: 0.6, inventory: [1, 2, 4, 7] },
+      { name: "Tokyo Bento Grocery", lat: 37.7893, lng: -122.4015, distanceMi: 1.1, inventory: [1, 2, 5, 6, 9] },
+      { name: "Seoul Mart", lat: 37.7734, lng: -122.4215, distanceMi: 1.7, inventory: [4, 8, 10] },
+      { name: "Golden Dragon Supermarket", lat: 37.7959, lng: -122.4074, distanceMi: 2.2, inventory: [3, 6, 7, 10] },
+      { name: "Pacific Rim Foods", lat: 37.7686, lng: -122.4024, distanceMi: 2.8, inventory: [2, 5, 8, 9] },
+      { name: "Lucky Panda Grocer", lat: 37.7609, lng: -122.4354, distanceMi: 3.4, inventory: [1, 3, 4, 6] }
+    ];
+
+    const snackGrid = document.getElementById("snackGrid");
+    const searchInput = document.getElementById("searchInput");
+    const resultCount = document.getElementById("resultCount");
+    const emptyState = document.getElementById("emptyState");
+    const categoryChips = document.getElementById("categoryChips");
+    const mapOverlay = document.getElementById("mapOverlay");
+    const closeModal = document.getElementById("closeModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const storePanel = document.getElementById("storePanel");
+
+    const categories = ["All", ...new Set(snacks.map((s) => s.category))];
+    let activeCategory = "All";
+    let map;
+    let currentMarkers = [];
+
+    function createCategoryChips() {
+      categoryChips.innerHTML = "";
+      categories.forEach((category) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip" + (category === activeCategory ? " active" : "");
+        btn.textContent = category;
+        btn.addEventListener("click", () => {
+          activeCategory = category;
+          createCategoryChips();
+          renderSnacks();
+        });
+        categoryChips.appendChild(btn);
+      });
+    }
+
+    function matchesSearch(snack, term) {
+      const query = term.toLowerCase();
+      const pool = [snack.name, snack.brand, snack.country, snack.category, snack.description, ...snack.tags].join(" ").toLowerCase();
+      return pool.includes(query);
+    }
+
+    function renderSnacks() {
+      const searchTerm = searchInput.value.trim();
+      const filtered = snacks.filter((snack) => {
+        const categoryMatch = activeCategory === "All" || snack.category === activeCategory;
+        const searchMatch = !searchTerm || matchesSearch(snack, searchTerm);
+        return categoryMatch && searchMatch;
+      });
+
+      snackGrid.innerHTML = "";
+      emptyState.style.display = filtered.length ? "none" : "block";
+      resultCount.textContent = `${filtered.length} snack${filtered.length === 1 ? "" : "s"} shown`;
+
+      filtered.forEach((snack) => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="snack-emoji" aria-hidden="true">${snack.emoji || "🍿"}</div>
+          <span class="badge">${snack.country} - ${snack.brand}</span>
+          <h3 class="name">${snack.name}</h3>
+          <p class="desc">${snack.description}</p>
+          <button class="map-btn" data-id="${snack.id}" type="button">View nearby stores on map</button>
+        `;
+        const mapBtn = card.querySelector(".map-btn");
+        mapBtn.addEventListener("click", () => openSnackMap(snack));
+        snackGrid.appendChild(card);
+      });
+    }
+
+    function resetMarkers() {
+      currentMarkers.forEach((marker) => marker.remove());
+      currentMarkers = [];
+    }
+
+    function openSnackMap(snack) {
+      const stockists = stores
+        .filter((store) => store.inventory.includes(snack.id))
+        .sort((a, b) => a.distanceMi - b.distanceMi);
+
+      modalTitle.textContent = `Nearby stores with ${snack.name}`;
+      mapOverlay.style.display = "flex";
+
+      storePanel.innerHTML = stockists.length
+        ? stockists.map((store) => `
+            <div class="store-card">
+              <strong>${store.name}</strong>
+              <p>Approx. distance: ${store.distanceMi.toFixed(1)} mi</p>
+              <p>Carries: ${snack.name}</p>
+            </div>
+          `).join("")
+        : "<p>No local stores found for this item yet.</p>";
+
+      if (!map) {
+        map = L.map("map").setView([37.7836, -122.4089], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: "&copy; OpenStreetMap contributors"
+        }).addTo(map);
+      }
+
+      resetMarkers();
+
+      stockists.forEach((store) => {
+        const marker = L.marker([store.lat, store.lng])
+          .addTo(map)
+          .bindPopup(`<strong>${store.name}</strong><br>${snack.name}<br>${store.distanceMi.toFixed(1)} mi away`);
+        currentMarkers.push(marker);
+      });
+
+      if (stockists.length) {
+        const bounds = L.latLngBounds(stockists.map((store) => [store.lat, store.lng]));
+        map.fitBounds(bounds.pad(0.25));
+      } else {
+        map.setView([37.7836, -122.4089], 12);
+      }
+
+      setTimeout(() => map.invalidateSize(), 0);
+    }
+
+    function closeMapModal() {
+      mapOverlay.style.display = "none";
+    }
+
+    searchInput.addEventListener("input", renderSnacks);
+    closeModal.addEventListener("click", closeMapModal);
+    mapOverlay.addEventListener("click", (event) => {
+      if (event.target === mapOverlay) {
+        closeMapModal();
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeMapModal();
+      }
+    });
+
+    createCategoryChips();
+    renderSnacks();
+  </script>
+</body>
+</html>
