@@ -118,6 +118,67 @@
       color: var(--muted);
     }
 
+    .location-panel {
+      margin-top: 0.9rem;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fffdfc;
+      padding: 0.75rem;
+      box-shadow: 0 6px 14px rgba(255, 145, 187, 0.1);
+    }
+
+    .location-title {
+      margin: 0 0 0.5rem;
+      font-size: 0.98rem;
+      color: #8c3a68;
+      font-weight: 700;
+    }
+
+    .location-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .manual-location {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.6rem;
+    }
+
+    .manual-location input {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.5rem 0.6rem;
+      width: min(420px, 100%);
+      font: inherit;
+      color: var(--ink);
+      cursor: text;
+    }
+
+    .soft-btn {
+      border: none;
+      border-radius: 10px;
+      background: #ffddeb;
+      color: #923c68;
+      padding: 0.5rem 0.75rem;
+      font-weight: 700;
+      box-shadow: 0 5px 12px rgba(255, 143, 177, 0.2);
+      cursor: var(--rabbit-cursor) 6 4, pointer;
+    }
+
+    .soft-btn:hover {
+      background: #ffcce0;
+    }
+
+    .location-status {
+      margin: 0.5rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
     .grid {
       margin-top: 1rem;
       display: grid;
@@ -297,6 +358,17 @@
       <div class="search-row">
         <input id="searchInput" type="search" placeholder="Search snacks by name, flavor, country, or tag..." aria-label="Search snacks">
       </div>
+      <div class="location-panel">
+        <p class="location-title">Set your location for accurate nearby store distances</p>
+        <div class="location-actions">
+          <button id="useCurrentLocationBtn" class="soft-btn" type="button">Use my current location</button>
+        </div>
+        <div class="manual-location">
+          <input id="addressInput" type="text" placeholder="Enter city or address (e.g. San Francisco, CA)" aria-label="City or address input">
+          <button id="setAddressLocationBtn" class="soft-btn" type="button">Use typed location</button>
+        </div>
+        <p class="location-status" id="locationStatus">Using default location: San Francisco, CA.</p>
+      </div>
       <div class="chips" id="categoryChips"></div>
       <p class="meta" id="resultCount"></p>
     </section>
@@ -355,11 +427,43 @@
     const closeModal = document.getElementById("closeModal");
     const modalTitle = document.getElementById("modalTitle");
     const storePanel = document.getElementById("storePanel");
+    const useCurrentLocationBtn = document.getElementById("useCurrentLocationBtn");
+    const setAddressLocationBtn = document.getElementById("setAddressLocationBtn");
+    const addressInput = document.getElementById("addressInput");
+    const locationStatus = document.getElementById("locationStatus");
 
     const categories = ["All", ...new Set(snacks.map((s) => s.category))];
     let activeCategory = "All";
     let map;
     let currentMarkers = [];
+    let userLocationMarker = null;
+    let userLocation = {
+      lat: 37.7836,
+      lng: -122.4089,
+      label: "Default location (San Francisco, CA)"
+    };
+
+    function milesBetween(lat1, lng1, lat2, lng2) {
+      const toRad = (value) => (value * Math.PI) / 180;
+      const earthRadiusMiles = 3958.8;
+      const dLat = toRad(lat2 - lat1);
+      const dLng = toRad(lng2 - lng1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return earthRadiusMiles * c;
+    }
+
+    function getDistanceFromUser(store) {
+      return milesBetween(userLocation.lat, userLocation.lng, store.lat, store.lng);
+    }
+
+    function setUserLocation(lat, lng, label) {
+      userLocation = { lat, lng, label };
+      locationStatus.textContent = `Using location: ${label} (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+    }
 
     function createCategoryChips() {
       categoryChips.innerHTML = "";
@@ -419,6 +523,7 @@
     function openSnackMap(snack) {
       const stockists = stores
         .filter((store) => store.inventory.includes(snack.id))
+        .map((store) => ({ ...store, distanceMi: getDistanceFromUser(store) }))
         .sort((a, b) => a.distanceMi - b.distanceMi);
 
       modalTitle.textContent = `Nearby stores with ${snack.name}`;
@@ -435,7 +540,7 @@
         : "<p>No local stores found for this item yet.</p>";
 
       if (!map) {
-        map = L.map("map").setView([37.7836, -122.4089], 13);
+        map = L.map("map").setView([userLocation.lat, userLocation.lng], 13);
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
           attribution: "&copy; OpenStreetMap contributors"
@@ -443,6 +548,13 @@
       }
 
       resetMarkers();
+
+      if (userLocationMarker) {
+        userLocationMarker.remove();
+      }
+      userLocationMarker = L.marker([userLocation.lat, userLocation.lng])
+        .addTo(map)
+        .bindPopup(`<strong>You are here</strong><br>${userLocation.label}`);
 
       stockists.forEach((store) => {
         const marker = L.marker([store.lat, store.lng])
@@ -452,10 +564,13 @@
       });
 
       if (stockists.length) {
-        const bounds = L.latLngBounds(stockists.map((store) => [store.lat, store.lng]));
+        const bounds = L.latLngBounds([
+          [userLocation.lat, userLocation.lng],
+          ...stockists.map((store) => [store.lat, store.lng])
+        ]);
         map.fitBounds(bounds.pad(0.25));
       } else {
-        map.setView([37.7836, -122.4089], 12);
+        map.setView([userLocation.lat, userLocation.lng], 12);
       }
 
       setTimeout(() => map.invalidateSize(), 0);
@@ -465,7 +580,77 @@
       mapOverlay.style.display = "none";
     }
 
+    async function trySetAddressLocation() {
+      const query = addressInput.value.trim();
+      if (!query) {
+        locationStatus.textContent = "Please enter a city or address.";
+        return;
+      }
+
+      locationStatus.textContent = "Finding that location...";
+      try {
+        const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`;
+        const response = await fetch(url, {
+          headers: {
+            "Accept": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("geocoding_failed");
+        }
+
+        const results = await response.json();
+        if (!Array.isArray(results) || results.length === 0) {
+          locationStatus.textContent = "No matching location found. Try a more specific city/address.";
+          return;
+        }
+
+        const first = results[0];
+        const lat = Number(first.lat);
+        const lng = Number(first.lon);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          locationStatus.textContent = "Could not read coordinates for that location.";
+          return;
+        }
+
+        const shortLabel = (first.display_name || query).split(",").slice(0, 2).join(",").trim();
+        setUserLocation(lat, lng, shortLabel || "Typed location");
+      } catch (error) {
+        locationStatus.textContent = "Could not look up that address right now. Please try again.";
+      }
+    }
+
+    function useCurrentLocation() {
+      if (!navigator.geolocation) {
+        locationStatus.textContent = "Geolocation is not supported in this browser.";
+        return;
+      }
+
+      locationStatus.textContent = "Getting your current location...";
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation(latitude, longitude, "Current location");
+        },
+        (error) => {
+          const message = error.code === 1
+            ? "Location permission denied. You can still type your location manually."
+            : "Unable to get your location. Please try again or enter it manually.";
+          locationStatus.textContent = message;
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
     searchInput.addEventListener("input", renderSnacks);
+    useCurrentLocationBtn.addEventListener("click", useCurrentLocation);
+    setAddressLocationBtn.addEventListener("click", trySetAddressLocation);
+    addressInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        trySetAddressLocation();
+      }
+    });
     closeModal.addEventListener("click", closeMapModal);
     mapOverlay.addEventListener("click", (event) => {
       if (event.target === mapOverlay) {
