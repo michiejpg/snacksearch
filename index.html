@@ -24,6 +24,7 @@
       --accent: #d1122a;
       --accent-dark: #a20d21;
       --line: #c9d8ef;
+      --line-strong: #1a1a1a;
       --danger: #b00020;
       --yellow: #e8f1ff;
       --mint: #eaf2ff;
@@ -63,6 +64,7 @@
       font-family: "Baloo 2", "Nunito", sans-serif;
       font-size: clamp(1.5rem, 2.5vw, 2.2rem);
       color: #0f4aa3;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
     }
 
     .subtitle {
@@ -89,7 +91,7 @@
 
     .nav-btn.active {
       background: var(--bg-accent);
-      border-color: #9db8e4;
+      border-color: var(--line-strong);
       color: #0b377a;
     }
 
@@ -139,7 +141,7 @@
 
     .chip.active {
       background: var(--bg-accent);
-      border-color: #9db8e4;
+      border-color: var(--line-strong);
       color: #0b377a;
       font-weight: 600;
     }
@@ -230,6 +232,7 @@
       flex-direction: column;
       gap: 0.55rem;
       box-shadow: 0 10px 22px rgba(15, 74, 163, 0.12);
+      outline: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .badge {
@@ -267,7 +270,7 @@
     .name {
       margin: 0;
       font-size: 1.02rem;
-      color: #111111;
+      color: #0a0a0a;
     }
 
     .desc {
@@ -282,7 +285,7 @@
       margin: 0;
       font-size: 0.9rem;
       font-weight: 700;
-      color: #0f4aa3;
+      color: #111111;
     }
 
     .map-btn {
@@ -302,10 +305,10 @@
     }
 
     .cart-btn {
-      border: 1px solid var(--line);
+      border: 1px solid #1a1a1a;
       border-radius: 12px;
       background: #ffffff;
-      color: #0f4aa3;
+      color: #111111;
       padding: 0.55rem 0.7rem;
       font-weight: 700;
       cursor: var(--rabbit-cursor) 6 4, pointer;
@@ -325,9 +328,9 @@
       width: 52px;
       height: 52px;
       border-radius: 999px;
-      border: 1px solid var(--line);
+      border: 1px solid #1a1a1a;
       background: #ffffff;
-      color: #0f4aa3;
+      color: #111111;
       font-size: 1.35rem;
       box-shadow: 0 10px 24px rgba(15, 74, 163, 0.2);
       cursor: var(--rabbit-cursor) 6 4, pointer;
@@ -351,7 +354,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 2px solid #ffffff;
+      border: 2px solid #1a1a1a;
     }
 
     .cart-panel {
@@ -452,6 +455,7 @@
     .modal-title {
       margin: 0;
       font-size: 1.08rem;
+      color: #111111;
     }
 
     .close-btn {
@@ -522,7 +526,7 @@
       border: 1px solid var(--line);
       box-shadow: 0 8px 20px rgba(15, 74, 163, 0.2);
       background: #ffffff;
-      color: var(--ink);
+      color: #111111;
     }
 
     .leaflet-popup-tip {
@@ -604,6 +608,7 @@
       margin-bottom: 0.6rem;
       background: #fff;
       box-shadow: 0 5px 12px rgba(15, 74, 163, 0.14);
+      outline: 1px solid rgba(0, 0, 0, 0.06);
     }
 
     .store-card p {
@@ -625,6 +630,7 @@
       background: #ffffff;
       padding: 0.9rem;
       box-shadow: 0 8px 18px rgba(15, 74, 163, 0.12);
+      outline: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .suggestion-panel h2 {
