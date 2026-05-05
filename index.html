@@ -316,13 +316,59 @@
       color: #0b377a;
     }
 
+    .cart-fab {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1000;
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: #0f4aa3;
+      font-size: 1.35rem;
+      box-shadow: 0 10px 24px rgba(15, 74, 163, 0.2);
+      cursor: var(--rabbit-cursor) 6 4, pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -6px;
+      right: -4px;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 0.35rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ffffff;
+    }
+
     .cart-panel {
-      margin-top: 1rem;
+      position: fixed;
+      top: 4.5rem;
+      right: 1rem;
+      z-index: 1000;
+      width: min(360px, calc(100vw - 2rem));
       border: 1px solid var(--line);
       border-radius: 16px;
       background: #ffffff;
       padding: 0.8rem;
       box-shadow: 0 6px 14px rgba(15, 74, 163, 0.1);
+      display: none;
+    }
+
+    .cart-panel.open {
+      display: block;
     }
 
     .cart-title {
@@ -664,10 +710,22 @@
       .suggestion-layout {
         grid-template-columns: 1fr;
       }
+      .cart-fab {
+        top: 0.75rem;
+        right: 0.75rem;
+      }
+      .cart-panel {
+        top: 4rem;
+        right: 0.75rem;
+      }
     }
   </style>
 </head>
 <body>
+  <button id="cartFabBtn" class="cart-fab" type="button" aria-label="Open shopping cart">
+    🛒
+    <span id="cartCount" class="cart-count">0</span>
+  </button>
   <div class="container">
     <header>
       <h1>SnackSearch</h1>
@@ -700,7 +758,7 @@
 
     <section class="grid" id="snackGrid" aria-label="Snack results"></section>
     <p class="empty" id="emptyState">No snacks found. Try another search or category.</p>
-    <section class="cart-panel" aria-label="Shopping cart">
+    <section id="cartPanel" class="cart-panel" aria-label="Shopping cart">
       <p class="cart-title" id="cartTitle">Cart (0)</p>
       <p class="cart-meta" id="cartMeta">Add snacks to your cart, then find stores that have everything.</p>
       <ul class="cart-items" id="cartItems"></ul>
@@ -813,6 +871,9 @@
     const cartTitle = document.getElementById("cartTitle");
     const cartMeta = document.getElementById("cartMeta");
     const cartItems = document.getElementById("cartItems");
+    const cartPanel = document.getElementById("cartPanel");
+    const cartFabBtn = document.getElementById("cartFabBtn");
+    const cartCount = document.getElementById("cartCount");
     const findCartStoresBtn = document.getElementById("findCartStoresBtn");
     const clearCartBtn = document.getElementById("clearCartBtn");
 
@@ -941,6 +1002,7 @@
       const ids = [...cart];
       const cartSnacks = snacks.filter((snack) => ids.includes(snack.id));
       cartTitle.textContent = `Cart (${cartSnacks.length})`;
+      cartCount.textContent = String(cartSnacks.length);
       cartMeta.textContent = cartSnacks.length
         ? "Ready to search for stores carrying all selected snacks."
         : "Add snacks to your cart, then find stores that have everything.";
@@ -1203,6 +1265,14 @@
     }
 
     searchInput.addEventListener("input", renderSnacks);
+    cartFabBtn.addEventListener("click", () => {
+      cartPanel.classList.toggle("open");
+    });
+    document.addEventListener("click", (event) => {
+      if (!cartPanel.contains(event.target) && !cartFabBtn.contains(event.target)) {
+        cartPanel.classList.remove("open");
+      }
+    });
     browseTabBtn.addEventListener("click", () => switchPage("browse"));
     suggestTabBtn.addEventListener("click", () => switchPage("suggest"));
     suggestionForm.addEventListener("submit", submitSuggestion);
