@@ -48,9 +48,10 @@
     }
 
     .container {
-      width: min(1100px, 92vw);
+      width: min(1400px, 97vw);
       margin: 0 auto;
-      padding: 1rem 0 3rem;
+      padding: 0.65rem 0 2rem;
+      position: relative;
     }
 
     header {
@@ -213,9 +214,9 @@
     .grid {
       margin-top: 1rem;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 0.9rem;
-      max-height: 62vh;
+      max-height: 74vh;
       overflow-y: auto;
       padding-right: 0.25rem;
     }
@@ -318,8 +319,8 @@
 
     .cart-fab {
       position: fixed;
-      top: 1rem;
-      right: 1rem;
+      top: max(1rem, env(safe-area-inset-top));
+      right: max(1rem, env(safe-area-inset-right));
       z-index: 1000;
       width: 52px;
       height: 52px;
@@ -355,10 +356,12 @@
 
     .cart-panel {
       position: fixed;
-      top: 4.5rem;
-      right: 1rem;
+      top: calc(max(1rem, env(safe-area-inset-top)) + 3.8rem);
+      right: max(1rem, env(safe-area-inset-right));
       z-index: 1000;
-      width: min(360px, calc(100vw - 2rem));
+      width: min(360px, calc(100vw - 2rem - env(safe-area-inset-right)));
+      max-height: calc(100vh - 6rem - env(safe-area-inset-top));
+      overflow: auto;
       border: 1px solid var(--line);
       border-radius: 16px;
       background: #ffffff;
@@ -428,8 +431,8 @@
     }
 
     .modal {
-      width: min(920px, 95vw);
-      max-height: 88vh;
+      width: min(1200px, 97vw);
+      max-height: 92vh;
       overflow: hidden;
       border-radius: 20px;
       background: #ffffff;
@@ -463,14 +466,14 @@
 
     .modal-body {
       display: grid;
-      grid-template-columns: 2fr 1fr;
-      min-height: 420px;
+      grid-template-columns: 2.2fr 1fr;
+      min-height: 520px;
     }
 
     #map {
       width: 100%;
       height: 100%;
-      min-height: 420px;
+      min-height: 520px;
       border-radius: 0 0 0 18px;
       border-right: 1px solid var(--line);
       background: #f5f9ff;
@@ -711,12 +714,13 @@
         grid-template-columns: 1fr;
       }
       .cart-fab {
-        top: 0.75rem;
-        right: 0.75rem;
+        top: max(0.75rem, env(safe-area-inset-top));
+        right: max(0.75rem, env(safe-area-inset-right));
       }
       .cart-panel {
-        top: 4rem;
-        right: 0.75rem;
+        top: calc(max(0.75rem, env(safe-area-inset-top)) + 3.8rem);
+        right: max(0.75rem, env(safe-area-inset-right));
+        width: min(340px, calc(100vw - 1.5rem - env(safe-area-inset-right)));
       }
     }
   </style>
