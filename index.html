@@ -277,6 +277,13 @@
       min-height: 2.3em;
     }
 
+    .price {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #0f4aa3;
+    }
+
     .map-btn {
       margin-top: auto;
       border: none;
@@ -678,20 +685,20 @@
   ></script>
   <script>
     const snacks = [
-      { id: 1, name: "Shrimp Crackers", brand: "Nongshim", country: "Korea", category: "Savory", tags: ["crispy", "seafood"], description: "Light, airy crackers with a savory shrimp flavor.", image: "./assets/shrimp-crackers.png" },
-      { id: 2, name: "Pocky Strawberry", brand: "Glico", country: "Japan", category: "Sweet", tags: ["chocolate", "strawberry"], description: "Crunchy biscuit sticks coated in strawberry cream.", image: "./assets/pocky-strawberry.png" },
-      { id: 3, name: "Sichuan Mala Flavor Potato Chips", brand: "Mychef's", country: "China", category: "Spicy", tags: ["sichuan", "numbing"], description: "Sichuan peppercorn heat with a numbing kick.", image: "./assets/sichuan-mala-potato-chips.png" },
-      { id: 4, name: "Honey Butter Chips", brand: "Haitai", country: "Korea", category: "Sweet", tags: ["potato", "honey"], description: "Sweet and salty chips with buttery honey flavor.", image: "./assets/honey-butter-chips.png" },
-      { id: 5, name: "Wasabi Peas", brand: "Kasugai", country: "Japan", category: "Spicy", tags: ["peas", "wasabi"], description: "Crunchy green peas with sharp wasabi heat.", image: "./assets/wasabi-peas.png" },
-      { id: 6, name: "Seaweed Rice Crackers", brand: "Want Want", country: "Taiwan", category: "Savory", tags: ["rice", "seaweed"], description: "Crisp rice crackers wrapped in umami seaweed.", image: "./assets/seaweed-rice-crackers.png" },
-      { id: 7, name: "White Rabbit Candy", brand: "Guan Sheng Yuan", country: "China", category: "Sweet", tags: ["milk", "chewy"], description: "Classic creamy milk candy with chewy texture.", image: "./assets/white-rabbit-candy.png" },
-      { id: 10, name: "Tamarind Candy", brand: "Amira", country: "Thailand", category: "Sweet", tags: ["fruit", "tangy"], description: "Sweet-and-tangy tamarind bites with a chewy finish.", image: "./assets/tamarind-candy.png" },
-      { id: 11, name: "Want Want Milk", brand: "Want Want", country: "Taiwan", category: "Beverage", tags: ["milk", "sweet", "creamy", "drink"], description: "Sweet, creamy milk beverage.", image: "./assets/want-want-milk.png" },
-      { id: 12, name: "Shrimp Chips", brand: "Calbee", country: "Japan", category: "Savory", tags: ["crispy", "seafood", "shrimp"], description: "Classic crispy shrimp chips with a light savory crunch.", image: "./assets/calbee-shrimp-chips.png" },
-      { id: 13, name: "Yan Yan Crackers and Dip", brand: "Meiji", country: "Japan", category: "Sweet", tags: ["cracker sticks", "dip", "vanilla"], description: "Crunchy cracker sticks paired with a creamy vanilla dip.", image: "./assets/yan-yan-crackers-dip.png" },
-      { id: 14, name: "Chocolate Mushrooms", brand: "Meiji", country: "Japan", category: "Sweet", tags: ["chocolate", "biscuit", "mushroom"], description: "Bite-sized biscuit stems topped with smooth chocolate caps.", image: "./assets/chocolate-mushrooms.png" },
-      { id: 15, name: "Soy Milk", brand: "Vitasoy", country: "Hong Kong", category: "Beverage", tags: ["soy", "milk", "drink"], description: "Smooth, lightly sweet soy milk drink.", image: "./assets/vitasoy-soy-milk.png" },
-      { id: 16, name: "Lemon Tea Drink", brand: "Vitasoy", country: "Hong Kong", category: "Beverage", tags: ["lemon", "tea", "drink"], description: "Refreshing lemon tea with a bright citrus flavor.", image: "./assets/vitasoy-lemon-tea-drink.png" }
+      { id: 1, name: "Shrimp Crackers", brand: "Nongshim", country: "Korea", category: "Savory", tags: ["crispy", "seafood"], description: "Light, airy crackers with a savory shrimp flavor.", price: "$2.49-$3.99", image: "./assets/shrimp-crackers.png" },
+      { id: 2, name: "Pocky Strawberry", brand: "Glico", country: "Japan", category: "Sweet", tags: ["chocolate", "strawberry"], description: "Crunchy biscuit sticks coated in strawberry cream.", price: "$1.79-$2.99", image: "./assets/pocky-strawberry.png" },
+      { id: 3, name: "Sichuan Mala Flavor Potato Chips", brand: "Mychef's", country: "China", category: "Spicy", tags: ["sichuan", "numbing"], description: "Sichuan peppercorn heat with a numbing kick.", price: "$2.29-$3.79", image: "./assets/sichuan-mala-potato-chips.png" },
+      { id: 4, name: "Honey Butter Chips", brand: "Haitai", country: "Korea", category: "Sweet", tags: ["potato", "honey"], description: "Sweet and salty chips with buttery honey flavor.", price: "$2.99-$4.49", image: "./assets/honey-butter-chips.png" },
+      { id: 5, name: "Wasabi Peas", brand: "Kasugai", country: "Japan", category: "Spicy", tags: ["peas", "wasabi"], description: "Crunchy green peas with sharp wasabi heat.", price: "$2.49-$4.29", image: "./assets/wasabi-peas.png" },
+      { id: 6, name: "Seaweed Rice Crackers", brand: "Want Want", country: "Taiwan", category: "Savory", tags: ["rice", "seaweed"], description: "Crisp rice crackers wrapped in umami seaweed.", price: "$1.99-$3.49", image: "./assets/seaweed-rice-crackers.png" },
+      { id: 7, name: "White Rabbit Candy", brand: "Guan Sheng Yuan", country: "China", category: "Sweet", tags: ["milk", "chewy"], description: "Classic creamy milk candy with chewy texture.", price: "$2.29-$4.99", image: "./assets/white-rabbit-candy.png" },
+      { id: 10, name: "Tamarind Candy", brand: "Amira", country: "Thailand", category: "Sweet", tags: ["fruit", "tangy"], description: "Sweet-and-tangy tamarind bites with a chewy finish.", price: "$1.49-$2.79", image: "./assets/tamarind-candy.png" },
+      { id: 11, name: "Want Want Milk", brand: "Want Want", country: "Taiwan", category: "Beverage", tags: ["milk", "sweet", "creamy", "drink"], description: "Sweet, creamy milk beverage.", price: "$2.19-$3.59", image: "./assets/want-want-milk.png" },
+      { id: 12, name: "Shrimp Chips", brand: "Calbee", country: "Japan", category: "Savory", tags: ["crispy", "seafood", "shrimp"], description: "Classic crispy shrimp chips with a light savory crunch.", price: "$2.49-$4.29", image: "./assets/calbee-shrimp-chips.png" },
+      { id: 13, name: "Yan Yan Crackers and Dip", brand: "Meiji", country: "Japan", category: "Sweet", tags: ["cracker sticks", "dip", "vanilla"], description: "Crunchy cracker sticks paired with a creamy vanilla dip.", price: "$1.99-$3.49", image: "./assets/yan-yan-crackers-dip.png" },
+      { id: 14, name: "Chocolate Mushrooms", brand: "Meiji", country: "Japan", category: "Sweet", tags: ["chocolate", "biscuit", "mushroom"], description: "Bite-sized biscuit stems topped with smooth chocolate caps.", price: "$2.29-$3.99", image: "./assets/chocolate-mushrooms.png" },
+      { id: 15, name: "Soy Milk", brand: "Vitasoy", country: "Hong Kong", category: "Beverage", tags: ["soy", "milk", "drink"], description: "Smooth, lightly sweet soy milk drink.", price: "$1.49-$2.69", image: "./assets/vitasoy-soy-milk.png" },
+      { id: 16, name: "Lemon Tea Drink", brand: "Vitasoy", country: "Hong Kong", category: "Beverage", tags: ["lemon", "tea", "drink"], description: "Refreshing lemon tea with a bright citrus flavor.", price: "$1.49-$2.69", image: "./assets/vitasoy-lemon-tea-drink.png" }
     ];
 
     const stores = [
@@ -876,6 +883,7 @@
           <span class="badge">${snack.country} - ${snack.brand}</span>
           <h3 class="name">${snack.name}</h3>
           <p class="desc">${snack.description}</p>
+          <p class="price">General price: ${snack.price || "Varies by store"}</p>
           <button class="map-btn" data-id="${snack.id}" type="button">View nearby stores on map</button>
         `;
         const mapBtn = card.querySelector(".map-btn");
@@ -904,6 +912,7 @@
               <strong>${store.name}</strong>
               <p>Approx. distance: ${store.distanceMi.toFixed(1)} mi</p>
               <p>Carries: ${snack.name}</p>
+              <p>General price: ${snack.price || "Varies by store"}</p>
             </div>
           `).join("")
         : "<p>No local stores found for this item yet.</p>";
@@ -932,7 +941,7 @@
           icon: createCuteMarkerIcon("store", snack.emoji || "🍡")
         })
           .addTo(map)
-          .bindPopup(`<strong>${store.name}</strong><br>${snack.name}<br>${store.distanceMi.toFixed(1)} mi away`);
+          .bindPopup(`<strong>${store.name}</strong><br>${snack.name}<br>${store.distanceMi.toFixed(1)} mi away<br>General price: ${snack.price || "Varies by store"}`);
         currentMarkers.push(marker);
       });
 
