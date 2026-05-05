@@ -253,6 +253,10 @@
       overflow: hidden;
     }
 
+    .snack-emoji.has-image {
+      background: #ffffff;
+    }
+
     .snack-emoji img {
       width: 100%;
       height: 100%;
@@ -674,11 +678,11 @@
   ></script>
   <script>
     const snacks = [
-      { id: 1, name: "Shrimp Crackers", brand: "Nongshim", country: "Korea", category: "Savory", tags: ["crispy", "seafood"], description: "Light, airy crackers with a savory shrimp flavor.", image: "./assets/shrimp-crackers.png", imageBg: "#ffffff" },
-      { id: 2, name: "Pocky Strawberry", brand: "Glico", country: "Japan", category: "Sweet", tags: ["chocolate", "strawberry"], description: "Crunchy biscuit sticks coated in strawberry cream.", emoji: "🍓" },
-      { id: 3, name: "Mala Potato Chips", brand: "Lay's", country: "China", category: "Spicy", tags: ["sichuan", "numbing"], description: "Sichuan peppercorn heat with a numbing kick.", emoji: "🌶️" },
-      { id: 4, name: "Honey Butter Chips", brand: "Haitai", country: "Korea", category: "Sweet", tags: ["potato", "honey"], description: "Sweet and salty chips with buttery honey flavor.", emoji: "🍯" },
-      { id: 5, name: "Wasabi Peas", brand: "Kasugai", country: "Japan", category: "Spicy", tags: ["peas", "wasabi"], description: "Crunchy green peas with sharp wasabi heat.", emoji: "🫛" },
+      { id: 1, name: "Shrimp Crackers", brand: "Nongshim", country: "Korea", category: "Savory", tags: ["crispy", "seafood"], description: "Light, airy crackers with a savory shrimp flavor.", image: "./assets/shrimp-crackers.png" },
+      { id: 2, name: "Pocky Strawberry", brand: "Glico", country: "Japan", category: "Sweet", tags: ["chocolate", "strawberry"], description: "Crunchy biscuit sticks coated in strawberry cream.", image: "./assets/pocky-strawberry.png" },
+      { id: 3, name: "Sichuan Mala Flavor Potato Chips", brand: "Mychef's", country: "China", category: "Spicy", tags: ["sichuan", "numbing"], description: "Sichuan peppercorn heat with a numbing kick.", image: "./assets/sichuan-mala-potato-chips.png" },
+      { id: 4, name: "Honey Butter Chips", brand: "Haitai", country: "Korea", category: "Sweet", tags: ["potato", "honey"], description: "Sweet and salty chips with buttery honey flavor.", image: "./assets/honey-butter-chips.png" },
+      { id: 5, name: "Wasabi Peas", brand: "Kasugai", country: "Japan", category: "Spicy", tags: ["peas", "wasabi"], description: "Crunchy green peas with sharp wasabi heat.", image: "./assets/wasabi-peas.png" },
       { id: 6, name: "Seaweed Rice Crackers", brand: "Want Want", country: "Taiwan", category: "Savory", tags: ["rice", "seaweed"], description: "Crisp rice crackers wrapped in umami seaweed.", emoji: "🍘" },
       { id: 7, name: "White Rabbit Candy", brand: "Guan Sheng Yuan", country: "China", category: "Sweet", tags: ["milk", "chewy"], description: "Classic creamy milk candy with chewy texture.", emoji: "🍬" },
       { id: 8, name: "Tteokbokki Snack Sticks", brand: "Nongshim", country: "Korea", category: "Spicy", tags: ["rice cake", "gochujang"], description: "Crunchy snack sticks inspired by tteokbokki sauce.", emoji: "🥢" },
@@ -864,9 +868,9 @@
         const snackVisual = snack.image
           ? `<img src="${snack.image}" alt="${snack.name}">`
           : (snack.emoji || "🍿");
-        const imageStyle = snack.imageBg ? `style="background:${snack.imageBg}"` : "";
+        const visualClass = snack.image ? "snack-emoji has-image" : "snack-emoji";
         card.innerHTML = `
-          <div class="snack-emoji" ${snack.image ? "" : 'aria-hidden="true"'} ${imageStyle}>${snackVisual}</div>
+          <div class="${visualClass}" ${snack.image ? "" : 'aria-hidden="true"'}>${snackVisual}</div>
           <span class="badge">${snack.country} - ${snack.brand}</span>
           <h3 class="name">${snack.name}</h3>
           <p class="desc">${snack.description}</p>
