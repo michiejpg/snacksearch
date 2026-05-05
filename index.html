@@ -523,7 +523,14 @@
       { id: 10, name: "Tamarind Candy", brand: "Tao Kae Noi", country: "Thailand", category: "Sweet", tags: ["fruit", "tangy"], description: "Sweet-and-tangy tamarind bites with a chewy finish.", emoji: "🍭" }
     ];
 
-    const nearbyStoreCache = new Map();
+    const stores = [
+      { name: "Sunrise Asian Market", lat: 37.7842, lng: -122.4096, distanceMi: 0.6, inventory: [1, 2, 4, 7] },
+      { name: "Tokyo Bento Grocery", lat: 37.7893, lng: -122.4015, distanceMi: 1.1, inventory: [1, 2, 5, 6, 9] },
+      { name: "Seoul Mart", lat: 37.7734, lng: -122.4215, distanceMi: 1.7, inventory: [4, 8, 10] },
+      { name: "Golden Dragon Supermarket", lat: 37.7959, lng: -122.4074, distanceMi: 2.2, inventory: [3, 6, 7, 10] },
+      { name: "Pacific Rim Foods", lat: 37.7686, lng: -122.4024, distanceMi: 2.8, inventory: [2, 5, 8, 9] },
+      { name: "Lucky Panda Grocer", lat: 37.7609, lng: -122.4354, distanceMi: 3.4, inventory: [1, 3, 4, 6] }
+    ];
 
     const snackGrid = document.getElementById("snackGrid");
     const searchInput = document.getElementById("searchInput");
@@ -548,19 +555,6 @@
       lat: 37.7836,
       lng: -122.4089,
       label: "Default location (San Francisco, CA)"
-    };
-
-    const snackKeywords = {
-      1: ["shrimp", "chip", "seafood", "calbee"],
-      2: ["pocky", "strawberry", "biscuit", "glico"],
-      3: ["mala", "sichuan", "spicy", "potato chip"],
-      4: ["honey butter", "chip", "korean snack"],
-      5: ["wasabi", "peas", "japanese snack"],
-      6: ["seaweed", "rice cracker", "senbei"],
-      7: ["white rabbit", "milk candy", "candy"],
-      8: ["tteokbokki", "korean snack", "rice cake snack"],
-      9: ["mochi", "ice cream", "dessert"],
-      10: ["tamarind", "candy", "thai snack"]
     };
 
     function createCuteMarkerIcon(type, emoji) {
@@ -592,103 +586,7 @@
 
     function setUserLocation(lat, lng, label) {
       userLocation = { lat, lng, label };
-      nearbyStoreCache.clear();
       locationStatus.textContent = `Using location: ${label} (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
-    }
-
-    function sanitizeStoreName(name, fallback) {
-      if (typeof name === "string" && name.trim()) {
-        return name.trim();
-      }
-      return fallback;
-    }
-
-    function storeMatchesSnack(store, snack) {
-      const textBlob = [
-        store.name,
-        store.brand || "",
-        store.cuisine || "",
-        store.shopType || ""
-      ].join(" ").toLowerCase();
-
-      const keywordPool = [
-        snack.name,
-        snack.brand,
-        snack.country,
-        snack.category,
-        ...snack.tags,
-        ...(snackKeywords[snack.id] || [])
-      ].map((value) => String(value).toLowerCase());
-
-      return keywordPool.some((keyword) => textBlob.includes(keyword));
-    }
-
-    async function fetchNearbyStores(lat, lng) {
-      const cacheKey = `${lat.toFixed(3)},${lng.toFixed(3)}`;
-      if (nearbyStoreCache.has(cacheKey)) {
-        return nearbyStoreCache.get(cacheKey);
-      }
-
-      const radiusMeters = 8000;
-      const overpassQuery = `
-        [out:json][timeout:25];
-        (
-          node["shop"~"supermarket|convenience|greengrocer|grocery"](around:${radiusMeters},${lat},${lng});
-          way["shop"~"supermarket|convenience|greengrocer|grocery"](around:${radiusMeters},${lat},${lng});
-          relation["shop"~"supermarket|convenience|greengrocer|grocery"](around:${radiusMeters},${lat},${lng});
-          node["amenity"="marketplace"](around:${radiusMeters},${lat},${lng});
-          way["amenity"="marketplace"](around:${radiusMeters},${lat},${lng});
-          relation["amenity"="marketplace"](around:${radiusMeters},${lat},${lng});
-        );
-        out center tags;
-      `;
-
-      const response = await fetch("https://overpass-api.de/api/interpreter", {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=UTF-8" },
-        body: overpassQuery
-      });
-
-      if (!response.ok) {
-        throw new Error("store_lookup_failed");
-      }
-
-      const data = await response.json();
-      const elements = Array.isArray(data?.elements) ? data.elements : [];
-      const dedupe = new Set();
-
-      const stores = elements
-        .map((element, index) => {
-          const centerLat = Number(element.lat ?? element.center?.lat);
-          const centerLng = Number(element.lon ?? element.center?.lon);
-          if (!Number.isFinite(centerLat) || !Number.isFinite(centerLng)) {
-            return null;
-          }
-
-          const tags = element.tags || {};
-          const rawName = sanitizeStoreName(tags.name, `Nearby market #${index + 1}`);
-          const key = `${rawName.toLowerCase()}|${centerLat.toFixed(4)}|${centerLng.toFixed(4)}`;
-          if (dedupe.has(key)) {
-            return null;
-          }
-          dedupe.add(key);
-
-          return {
-            id: `${element.type}-${element.id}`,
-            name: rawName,
-            lat: centerLat,
-            lng: centerLng,
-            shopType: tags.shop || tags.amenity || "store",
-            cuisine: tags.cuisine || "",
-            distanceMi: milesBetween(lat, lng, centerLat, centerLng)
-          };
-        })
-        .filter(Boolean)
-        .sort((a, b) => a.distanceMi - b.distanceMi)
-        .slice(0, 24);
-
-      nearbyStoreCache.set(cacheKey, stores);
-      return stores;
     }
 
     function createCategoryChips() {
@@ -746,32 +644,24 @@
       currentMarkers = [];
     }
 
-    async function openSnackMap(snack) {
+    function openSnackMap(snack) {
+      const stockists = stores
+        .filter((store) => store.inventory.includes(snack.id))
+        .map((store) => ({ ...store, distanceMi: getDistanceFromUser(store) }))
+        .sort((a, b) => a.distanceMi - b.distanceMi);
+
       modalTitle.textContent = `Nearby stores with ${snack.name}`;
       mapOverlay.style.display = "flex";
-      storePanel.innerHTML = "<p>Looking up nearby real stores...</p>";
-
-      let nearbyStores = [];
-      try {
-        nearbyStores = await fetchNearbyStores(userLocation.lat, userLocation.lng);
-      } catch (error) {
-        storePanel.innerHTML = "<p>Could not fetch nearby stores right now. Please try again in a moment.</p>";
-        return;
-      }
-
-      const stockists = nearbyStores
-        .filter((store) => storeMatchesSnack(store, snack))
-        .slice(0, 12);
 
       storePanel.innerHTML = stockists.length
         ? stockists.map((store) => `
             <div class="store-card">
               <strong>${store.name}</strong>
               <p>Approx. distance: ${store.distanceMi.toFixed(1)} mi</p>
-              <p>Likely match for: ${snack.name}</p>
+              <p>Carries: ${snack.name}</p>
             </div>
           `).join("")
-        : `<p>No likely snack matches found nearby yet. Showing nearest stores on map instead.</p>`;
+        : "<p>No local stores found for this item yet.</p>";
 
       if (!map) {
         map = L.map("map").setView([userLocation.lat, userLocation.lng], 13);
@@ -792,9 +682,7 @@
         .addTo(map)
         .bindPopup(`<strong>You are here</strong><br>${userLocation.label}`);
 
-      const storesToDisplay = stockists.length ? stockists : nearbyStores.slice(0, 12);
-
-      storesToDisplay.forEach((store) => {
+      stockists.forEach((store) => {
         const marker = L.marker([store.lat, store.lng], {
           icon: createCuteMarkerIcon("store", snack.emoji || "🍡")
         })
@@ -803,10 +691,10 @@
         currentMarkers.push(marker);
       });
 
-      if (storesToDisplay.length) {
+      if (stockists.length) {
         const bounds = L.latLngBounds([
           [userLocation.lat, userLocation.lng],
-          ...storesToDisplay.map((store) => [store.lat, store.lng])
+          ...stockists.map((store) => [store.lat, store.lng])
         ]);
         map.fitBounds(bounds.pad(0.25));
       } else {
