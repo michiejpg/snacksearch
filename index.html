@@ -48,9 +48,10 @@
     }
 
     .container {
-      width: min(1100px, 92vw);
+      width: min(1400px, 97vw);
       margin: 0 auto;
-      padding: 1rem 0 3rem;
+      padding: 0.65rem 0 2rem;
+      position: relative;
     }
 
     header {
@@ -213,9 +214,9 @@
     .grid {
       margin-top: 1rem;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 0.9rem;
-      max-height: 62vh;
+      max-height: 74vh;
       overflow-y: auto;
       padding-right: 0.25rem;
     }
@@ -277,6 +278,13 @@
       min-height: 2.3em;
     }
 
+    .price {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #0f4aa3;
+    }
+
     .map-btn {
       margin-top: auto;
       border: none;
@@ -291,6 +299,117 @@
 
     .map-btn:hover {
       background: var(--accent-dark);
+    }
+
+    .cart-btn {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #ffffff;
+      color: #0f4aa3;
+      padding: 0.55rem 0.7rem;
+      font-weight: 700;
+      cursor: var(--rabbit-cursor) 6 4, pointer;
+    }
+
+    .cart-btn.in-cart {
+      background: #e8f1ff;
+      border-color: #9db8e4;
+      color: #0b377a;
+    }
+
+    .cart-fab {
+      position: fixed;
+      top: max(1rem, env(safe-area-inset-top));
+      right: max(1rem, env(safe-area-inset-right));
+      z-index: 1000;
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: #0f4aa3;
+      font-size: 1.35rem;
+      box-shadow: 0 10px 24px rgba(15, 74, 163, 0.2);
+      cursor: var(--rabbit-cursor) 6 4, pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -6px;
+      right: -4px;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 0.35rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ffffff;
+    }
+
+    .cart-panel {
+      position: fixed;
+      top: calc(max(1rem, env(safe-area-inset-top)) + 3.8rem);
+      right: max(1rem, env(safe-area-inset-right));
+      z-index: 1000;
+      width: min(360px, calc(100vw - 2rem - env(safe-area-inset-right)));
+      max-height: calc(100vh - 6rem - env(safe-area-inset-top));
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #ffffff;
+      padding: 0.8rem;
+      box-shadow: 0 6px 14px rgba(15, 74, 163, 0.1);
+      display: none;
+    }
+
+    .cart-panel.open {
+      display: block;
+    }
+
+    .cart-title {
+      margin: 0;
+      font-size: 1rem;
+      color: #0f4aa3;
+      font-weight: 700;
+    }
+
+    .cart-meta {
+      margin: 0.3rem 0 0.6rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .cart-items {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .cart-items li {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f7faff;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.84rem;
+      color: #0b377a;
+    }
+
+    .cart-actions {
+      margin-top: 0.7rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .empty {
@@ -312,8 +431,8 @@
     }
 
     .modal {
-      width: min(920px, 95vw);
-      max-height: 88vh;
+      width: min(1200px, 97vw);
+      max-height: 92vh;
       overflow: hidden;
       border-radius: 20px;
       background: #ffffff;
@@ -347,14 +466,14 @@
 
     .modal-body {
       display: grid;
-      grid-template-columns: 2fr 1fr;
-      min-height: 420px;
+      grid-template-columns: 2.2fr 1fr;
+      min-height: 520px;
     }
 
     #map {
       width: 100%;
       height: 100%;
-      min-height: 420px;
+      min-height: 520px;
       border-radius: 0 0 0 18px;
       border-right: 1px solid var(--line);
       background: #f5f9ff;
@@ -594,10 +713,23 @@
       .suggestion-layout {
         grid-template-columns: 1fr;
       }
+      .cart-fab {
+        top: max(0.75rem, env(safe-area-inset-top));
+        right: max(0.75rem, env(safe-area-inset-right));
+      }
+      .cart-panel {
+        top: calc(max(0.75rem, env(safe-area-inset-top)) + 3.8rem);
+        right: max(0.75rem, env(safe-area-inset-right));
+        width: min(340px, calc(100vw - 1.5rem - env(safe-area-inset-right)));
+      }
     }
   </style>
 </head>
 <body>
+  <button id="cartFabBtn" class="cart-fab" type="button" aria-label="Open shopping cart">
+    🛒
+    <span id="cartCount" class="cart-count">0</span>
+  </button>
   <div class="container">
     <header>
       <h1>SnackSearch</h1>
@@ -630,6 +762,15 @@
 
     <section class="grid" id="snackGrid" aria-label="Snack results"></section>
     <p class="empty" id="emptyState">No snacks found. Try another search or category.</p>
+    <section id="cartPanel" class="cart-panel" aria-label="Shopping cart">
+      <p class="cart-title" id="cartTitle">Cart (0)</p>
+      <p class="cart-meta" id="cartMeta">Add snacks to your cart, then find stores that have everything.</p>
+      <ul class="cart-items" id="cartItems"></ul>
+      <div class="cart-actions">
+        <button id="findCartStoresBtn" class="soft-btn" type="button">Find stores for cart</button>
+        <button id="clearCartBtn" class="cart-btn" type="button">Clear cart</button>
+      </div>
+    </section>
     </div>
 
     <section id="suggestPage" class="page" aria-label="Snack suggestion page">
@@ -678,20 +819,20 @@
   ></script>
   <script>
     const snacks = [
-      { id: 1, name: "Shrimp Crackers", brand: "Nongshim", country: "Korea", category: "Savory", tags: ["crispy", "seafood"], description: "Light, airy crackers with a savory shrimp flavor.", image: "./assets/shrimp-crackers.png" },
-      { id: 2, name: "Pocky Strawberry", brand: "Glico", country: "Japan", category: "Sweet", tags: ["chocolate", "strawberry"], description: "Crunchy biscuit sticks coated in strawberry cream.", image: "./assets/pocky-strawberry.png" },
-      { id: 3, name: "Sichuan Mala Flavor Potato Chips", brand: "Mychef's", country: "China", category: "Spicy", tags: ["sichuan", "numbing"], description: "Sichuan peppercorn heat with a numbing kick.", image: "./assets/sichuan-mala-potato-chips.png" },
-      { id: 4, name: "Honey Butter Chips", brand: "Haitai", country: "Korea", category: "Sweet", tags: ["potato", "honey"], description: "Sweet and salty chips with buttery honey flavor.", image: "./assets/honey-butter-chips.png" },
-      { id: 5, name: "Wasabi Peas", brand: "Kasugai", country: "Japan", category: "Spicy", tags: ["peas", "wasabi"], description: "Crunchy green peas with sharp wasabi heat.", image: "./assets/wasabi-peas.png" },
-      { id: 6, name: "Seaweed Rice Crackers", brand: "Want Want", country: "Taiwan", category: "Savory", tags: ["rice", "seaweed"], description: "Crisp rice crackers wrapped in umami seaweed.", image: "./assets/seaweed-rice-crackers.png" },
-      { id: 7, name: "White Rabbit Candy", brand: "Guan Sheng Yuan", country: "China", category: "Sweet", tags: ["milk", "chewy"], description: "Classic creamy milk candy with chewy texture.", image: "./assets/white-rabbit-candy.png" },
-      { id: 10, name: "Tamarind Candy", brand: "Amira", country: "Thailand", category: "Sweet", tags: ["fruit", "tangy"], description: "Sweet-and-tangy tamarind bites with a chewy finish.", image: "./assets/tamarind-candy.png" },
-      { id: 11, name: "Want Want Milk", brand: "Want Want", country: "Taiwan", category: "Beverage", tags: ["milk", "sweet", "creamy", "drink"], description: "Sweet, creamy milk beverage.", image: "./assets/want-want-milk.png" },
-      { id: 12, name: "Shrimp Chips", brand: "Calbee", country: "Japan", category: "Savory", tags: ["crispy", "seafood", "shrimp"], description: "Classic crispy shrimp chips with a light savory crunch.", image: "./assets/calbee-shrimp-chips.png" },
-      { id: 13, name: "Yan Yan Crackers and Dip", brand: "Meiji", country: "Japan", category: "Sweet", tags: ["cracker sticks", "dip", "vanilla"], description: "Crunchy cracker sticks paired with a creamy vanilla dip.", image: "./assets/yan-yan-crackers-dip.png" },
-      { id: 14, name: "Chocolate Mushrooms", brand: "Meiji", country: "Japan", category: "Sweet", tags: ["chocolate", "biscuit", "mushroom"], description: "Bite-sized biscuit stems topped with smooth chocolate caps.", image: "./assets/chocolate-mushrooms.png" },
-      { id: 15, name: "Soy Milk", brand: "Vitasoy", country: "Hong Kong", category: "Beverage", tags: ["soy", "milk", "drink"], description: "Smooth, lightly sweet soy milk drink.", image: "./assets/vitasoy-soy-milk.png" },
-      { id: 16, name: "Lemon Tea Drink", brand: "Vitasoy", country: "Hong Kong", category: "Beverage", tags: ["lemon", "tea", "drink"], description: "Refreshing lemon tea with a bright citrus flavor.", image: "./assets/vitasoy-lemon-tea-drink.png" },
+      { id: 1, name: "Shrimp Crackers", brand: "Nongshim", country: "Korea", category: "Savory", tags: ["crispy", "seafood"], description: "Light, airy crackers with a savory shrimp flavor.", price: "$2.49-$3.99", image: "./assets/shrimp-crackers.png" },
+      { id: 2, name: "Pocky Strawberry", brand: "Glico", country: "Japan", category: "Sweet", tags: ["chocolate", "strawberry"], description: "Crunchy biscuit sticks coated in strawberry cream.", price: "$1.79-$2.99", image: "./assets/pocky-strawberry.png" },
+      { id: 3, name: "Sichuan Mala Flavor Potato Chips", brand: "Mychef's", country: "China", category: "Spicy", tags: ["sichuan", "numbing"], description: "Sichuan peppercorn heat with a numbing kick.", price: "$2.29-$3.79", image: "./assets/sichuan-mala-potato-chips.png" },
+      { id: 4, name: "Honey Butter Chips", brand: "Haitai", country: "Korea", category: "Sweet", tags: ["potato", "honey"], description: "Sweet and salty chips with buttery honey flavor.", price: "$2.99-$4.49", image: "./assets/honey-butter-chips.png" },
+      { id: 5, name: "Wasabi Peas", brand: "Kasugai", country: "Japan", category: "Spicy", tags: ["peas", "wasabi"], description: "Crunchy green peas with sharp wasabi heat.", price: "$2.49-$4.29", image: "./assets/wasabi-peas.png" },
+      { id: 6, name: "Seaweed Rice Crackers", brand: "Want Want", country: "Taiwan", category: "Savory", tags: ["rice", "seaweed"], description: "Crisp rice crackers wrapped in umami seaweed.", price: "$1.99-$3.49", image: "./assets/seaweed-rice-crackers.png" },
+      { id: 7, name: "White Rabbit Candy", brand: "Guan Sheng Yuan", country: "China", category: "Sweet", tags: ["milk", "chewy"], description: "Classic creamy milk candy with chewy texture.", price: "$2.29-$4.99", image: "./assets/white-rabbit-candy.png" },
+      { id: 10, name: "Tamarind Candy", brand: "Amira", country: "Thailand", category: "Sweet", tags: ["fruit", "tangy"], description: "Sweet-and-tangy tamarind bites with a chewy finish.", price: "$1.49-$2.79", image: "./assets/tamarind-candy.png" },
+      { id: 11, name: "Want Want Milk", brand: "Want Want", country: "Taiwan", category: "Beverage", tags: ["milk", "sweet", "creamy", "drink"], description: "Sweet, creamy milk beverage.", price: "$2.19-$3.59", image: "./assets/want-want-milk.png" },
+      { id: 12, name: "Shrimp Chips", brand: "Calbee", country: "Japan", category: "Savory", tags: ["crispy", "seafood", "shrimp"], description: "Classic crispy shrimp chips with a light savory crunch.", price: "$2.49-$4.29", image: "./assets/calbee-shrimp-chips.png" },
+      { id: 13, name: "Yan Yan Crackers and Dip", brand: "Meiji", country: "Japan", category: "Sweet", tags: ["cracker sticks", "dip", "vanilla"], description: "Crunchy cracker sticks paired with a creamy vanilla dip.", price: "$1.99-$3.49", image: "./assets/yan-yan-crackers-dip.png" },
+      { id: 14, name: "Chocolate Mushrooms", brand: "Meiji", country: "Japan", category: "Sweet", tags: ["chocolate", "biscuit", "mushroom"], description: "Bite-sized biscuit stems topped with smooth chocolate caps.", price: "$2.29-$3.99", image: "./assets/chocolate-mushrooms.png" },
+      { id: 15, name: "Soy Milk", brand: "Vitasoy", country: "Hong Kong", category: "Beverage", tags: ["soy", "milk", "drink"], description: "Smooth, lightly sweet soy milk drink.", price: "$1.49-$2.69", image: "./assets/vitasoy-soy-milk.png" },
+      { id: 16, name: "Lemon Tea Drink", brand: "Vitasoy", country: "Hong Kong", category: "Beverage", tags: ["lemon", "tea", "drink"], description: "Refreshing lemon tea with a bright citrus flavor.", price: "$1.49-$2.69", image: "./assets/vitasoy-lemon-tea-drink.png" },
       { id: 17, name: "Non-Carbonated Beverage", brand: "Calpico", country: "Japan", category: "Beverage", tags: ["soft drink", "citrusy", "original"], description: "Soft drink with original citrusy flavor.", image: "./assets/calpico-original-citrusy.png" },
       { id: 18, name: "Strawberry Non-Carbonated Soft Drink", brand: "Calpico", country: "Japan", category: "Beverage", tags: ["strawberry", "soft drink", "calpis water"], description: "Strawberry and Calpis Water.", image: "./assets/calpico-strawberry.png" },
       { id: 19, name: "Non-Carbonated Beverage", brand: "Calpico", country: "Japan", category: "Beverage", tags: ["mini", "soft drink", "yogurt flavor"], description: "Mini soft drink yogurt flavor.", image: "./assets/calpico-mini-yogurt.png" },
@@ -715,16 +856,16 @@
     ];
 
     const stores = [
-      { name: "Walmart Supercenter (777 Story Rd)", lat: 37.3309829, lng: -121.8605011, distanceMi: 0.6, inventory: [1, 2, 4, 7] },
-      { name: "Mitsuwa Marketplace (675 Saratoga Ave)", lat: 37.3149469, lng: -121.9782000, distanceMi: 1.1, inventory: [1, 2, 5, 6] },
-      { name: "H Mart (1710 Oakland Rd)", lat: 37.3838318, lng: -121.8945230, distanceMi: 1.7, inventory: [1, 4, 10] },
-      { name: "Tokyo Central (19750 Stevens Creek Blvd, Cupertino)", lat: 37.3218846, lng: -122.0185478, distanceMi: 1.9, inventory: [1, 3, 6, 7] },
-      { name: "99 Ranch Market (1688 Hostetter Rd)", lat: 37.3863372, lng: -121.8844054, distanceMi: 2.2, inventory: [1, 2, 3, 5, 6, 7, 10] },
-      { name: "World Market (555 Coleman Ave)", lat: 37.3391631, lng: -121.9062284, distanceMi: 2.8, inventory: [2, 4, 7, 10] },
-      { name: "Thien Thanh Supermarket (1080 S 10th St)", lat: 37.3246858, lng: -121.8686004, distanceMi: 1.4, inventory: [1, 3, 4, 6] },
-      { name: "Nijiya Market (240 Jackson St)", lat: 37.3490979, lng: -121.8935121, distanceMi: 2.1, inventory: [1, 2, 5, 6] },
-      { name: "Lion Supermarket (1710 Tully Rd)", lat: 37.3211458, lng: -121.8238280, distanceMi: 2.0, inventory: [1, 3, 4, 6, 7, 10] },
-      { name: "Ginger Market (SJSU Campus)", lat: 37.3351902, lng: -121.8812250, distanceMi: 1.1, inventory: [1, 2, 4, 5] }
+      { name: "Walmart Supercenter (777 Story Rd)", lat: 37.3309829, lng: -121.8605011, distanceMi: 0.6, inventory: [1, 2, 4, 7, 11, 12] },
+      { name: "Mitsuwa Marketplace (675 Saratoga Ave)", lat: 37.3149469, lng: -121.9782000, distanceMi: 1.1, inventory: [1, 2, 5, 6, 12, 13, 14] },
+      { name: "H Mart (1710 Oakland Rd)", lat: 37.3838318, lng: -121.8945230, distanceMi: 1.7, inventory: [1, 4, 10, 11, 12] },
+      { name: "Tokyo Central (19750 Stevens Creek Blvd, Cupertino)", lat: 37.3218846, lng: -122.0185478, distanceMi: 1.9, inventory: [1, 3, 6, 7, 12, 13, 14] },
+      { name: "99 Ranch Market (1688 Hostetter Rd)", lat: 37.3863372, lng: -121.8844054, distanceMi: 2.2, inventory: [1, 2, 3, 5, 6, 7, 10, 11, 12, 15, 16] },
+      { name: "World Market (555 Coleman Ave)", lat: 37.3391631, lng: -121.9062284, distanceMi: 2.8, inventory: [2, 4, 7, 10, 13, 14] },
+      { name: "Thien Thanh Supermarket (1080 S 10th St)", lat: 37.3246858, lng: -121.8686004, distanceMi: 1.4, inventory: [1, 3, 4, 6, 11, 15, 16] },
+      { name: "Nijiya Market (240 Jackson St)", lat: 37.3490979, lng: -121.8935121, distanceMi: 2.1, inventory: [1, 2, 5, 6, 12, 13, 14] },
+      { name: "Lion Supermarket (1710 Tully Rd)", lat: 37.3211458, lng: -121.8238280, distanceMi: 2.0, inventory: [1, 3, 4, 6, 7, 10, 11, 15, 16] },
+      { name: "Ginger Market (SJSU Campus)", lat: 37.3351902, lng: -121.8812250, distanceMi: 1.1, inventory: [1, 2, 4, 5, 11, 13] }
     ];
 
     const snackGrid = document.getElementById("snackGrid");
@@ -751,12 +892,21 @@
     const suggestionStatus = document.getElementById("suggestionStatus");
     const suggestionList = document.getElementById("suggestionList");
     const suggestionEmpty = document.getElementById("suggestionEmpty");
+    const cartTitle = document.getElementById("cartTitle");
+    const cartMeta = document.getElementById("cartMeta");
+    const cartItems = document.getElementById("cartItems");
+    const cartPanel = document.getElementById("cartPanel");
+    const cartFabBtn = document.getElementById("cartFabBtn");
+    const cartCount = document.getElementById("cartCount");
+    const findCartStoresBtn = document.getElementById("findCartStoresBtn");
+    const clearCartBtn = document.getElementById("clearCartBtn");
 
     const categories = ["All", ...new Set(snacks.map((s) => s.category))];
     let activeCategory = "All";
     let map;
     let currentMarkers = [];
     let userLocationMarker = null;
+    const cart = new Set();
     let userLocation = {
       lat: 37.3382,
       lng: -121.8863,
@@ -872,6 +1022,33 @@
       return pool.includes(query);
     }
 
+    function renderCart() {
+      const ids = [...cart];
+      const cartSnacks = snacks.filter((snack) => ids.includes(snack.id));
+      cartTitle.textContent = `Cart (${cartSnacks.length})`;
+      cartCount.textContent = String(cartSnacks.length);
+      cartMeta.textContent = cartSnacks.length
+        ? "Ready to search for stores carrying all selected snacks."
+        : "Add snacks to your cart, then find stores that have everything.";
+      cartItems.innerHTML = cartSnacks.map((snack) => `<li>${snack.name}</li>`).join("");
+    }
+
+    function toggleCartItem(snackId) {
+      if (cart.has(snackId)) {
+        cart.delete(snackId);
+      } else {
+        cart.add(snackId);
+      }
+      renderCart();
+      renderSnacks();
+    }
+
+    function clearCart() {
+      cart.clear();
+      renderCart();
+      renderSnacks();
+    }
+
     function renderSnacks() {
       const searchTerm = searchInput.value.trim();
       const filtered = snacks.filter((snack) => {
@@ -896,9 +1073,15 @@
           <span class="badge">${snack.country} - ${snack.brand}</span>
           <h3 class="name">${snack.name}</h3>
           <p class="desc">${snack.description}</p>
+          <p class="price">General price: ${snack.price || "Varies by store"}</p>
+          <button class="cart-btn ${cart.has(snack.id) ? "in-cart" : ""}" data-cart-id="${snack.id}" type="button">
+            ${cart.has(snack.id) ? "Added to cart" : "Add to cart"}
+          </button>
           <button class="map-btn" data-id="${snack.id}" type="button">View nearby stores on map</button>
         `;
+        const cartBtn = card.querySelector(".cart-btn");
         const mapBtn = card.querySelector(".map-btn");
+        cartBtn.addEventListener("click", () => toggleCartItem(snack.id));
         mapBtn.addEventListener("click", () => openSnackMap(snack));
         snackGrid.appendChild(card);
       });
@@ -924,6 +1107,7 @@
               <strong>${store.name}</strong>
               <p>Approx. distance: ${store.distanceMi.toFixed(1)} mi</p>
               <p>Carries: ${snack.name}</p>
+              <p>General price: ${snack.price || "Varies by store"}</p>
             </div>
           `).join("")
         : "<p>No local stores found for this item yet.</p>";
@@ -952,7 +1136,75 @@
           icon: createCuteMarkerIcon("store", snack.emoji || "🍡")
         })
           .addTo(map)
-          .bindPopup(`<strong>${store.name}</strong><br>${snack.name}<br>${store.distanceMi.toFixed(1)} mi away`);
+          .bindPopup(`<strong>${store.name}</strong><br>${snack.name}<br>${store.distanceMi.toFixed(1)} mi away<br>General price: ${snack.price || "Varies by store"}`);
+        currentMarkers.push(marker);
+      });
+
+      if (stockists.length) {
+        const bounds = L.latLngBounds([
+          [userLocation.lat, userLocation.lng],
+          ...stockists.map((store) => [store.lat, store.lng])
+        ]);
+        map.fitBounds(bounds.pad(0.25));
+      } else {
+        map.setView([userLocation.lat, userLocation.lng], 12);
+      }
+
+      setTimeout(() => map.invalidateSize(), 0);
+    }
+
+    function openCartMap() {
+      const selectedSnacks = snacks.filter((snack) => cart.has(snack.id));
+      if (!selectedSnacks.length) {
+        cartMeta.textContent = "Your cart is empty. Add at least one snack first.";
+        return;
+      }
+
+      const selectedIds = selectedSnacks.map((snack) => snack.id);
+      const stockists = stores
+        .filter((store) => selectedIds.every((id) => store.inventory.includes(id)))
+        .map((store) => ({ ...store, distanceMi: getDistanceFromUser(store) }))
+        .sort((a, b) => a.distanceMi - b.distanceMi);
+
+      const snackNames = selectedSnacks.map((snack) => snack.name).join(", ");
+      modalTitle.textContent = "Stores with all cart snacks";
+      mapOverlay.style.display = "flex";
+
+      storePanel.innerHTML = stockists.length
+        ? stockists.map((store) => `
+            <div class="store-card">
+              <strong>${store.name}</strong>
+              <p>Approx. distance: ${store.distanceMi.toFixed(1)} mi</p>
+              <p>Has all: ${snackNames}</p>
+            </div>
+          `).join("")
+        : "<p>No nearby stores currently match all snacks in your cart.</p>";
+
+      if (!map) {
+        map = L.map("map").setView([userLocation.lat, userLocation.lng], 13);
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+          maxZoom: 19,
+          attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
+        }).addTo(map);
+      }
+
+      resetMarkers();
+
+      if (userLocationMarker) {
+        userLocationMarker.remove();
+      }
+      userLocationMarker = L.marker([userLocation.lat, userLocation.lng], {
+        icon: createCuteMarkerIcon("user", "🐰")
+      })
+        .addTo(map)
+        .bindPopup(`<strong>You are here</strong><br>${userLocation.label}`);
+
+      stockists.forEach((store) => {
+        const marker = L.marker([store.lat, store.lng], {
+          icon: createCuteMarkerIcon("store", "🛒")
+        })
+          .addTo(map)
+          .bindPopup(`<strong>${store.name}</strong><br>Has all cart snacks<br>${store.distanceMi.toFixed(1)} mi away`);
         currentMarkers.push(marker);
       });
 
@@ -1037,9 +1289,19 @@
     }
 
     searchInput.addEventListener("input", renderSnacks);
+    cartFabBtn.addEventListener("click", () => {
+      cartPanel.classList.toggle("open");
+    });
+    document.addEventListener("click", (event) => {
+      if (!cartPanel.contains(event.target) && !cartFabBtn.contains(event.target)) {
+        cartPanel.classList.remove("open");
+      }
+    });
     browseTabBtn.addEventListener("click", () => switchPage("browse"));
     suggestTabBtn.addEventListener("click", () => switchPage("suggest"));
     suggestionForm.addEventListener("submit", submitSuggestion);
+    findCartStoresBtn.addEventListener("click", openCartMap);
+    clearCartBtn.addEventListener("click", clearCart);
     useCurrentLocationBtn.addEventListener("click", useCurrentLocation);
     setAddressLocationBtn.addEventListener("click", trySetAddressLocation);
     addressInput.addEventListener("keydown", (event) => {
@@ -1060,6 +1322,7 @@
     });
 
     createCategoryChips();
+    renderCart();
     renderSnacks();
     renderSuggestions();
   </script>
