@@ -69,6 +69,37 @@
       color: var(--muted);
     }
 
+    .top-nav {
+      margin-top: 0.9rem;
+      display: flex;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      border: 1px solid #ffc6dc;
+      background: #fff5fa;
+      color: #974a75;
+      border-radius: 999px;
+      padding: 0.45rem 0.9rem;
+      font-weight: 700;
+      cursor: var(--rabbit-cursor) 6 4, pointer;
+    }
+
+    .nav-btn.active {
+      background: var(--yellow);
+      border-color: #f8d84f;
+      color: #7b5a10;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
     .search-row {
       margin-top: 1.2rem;
       display: grid;
@@ -320,6 +351,120 @@
       width: 100%;
       height: 100%;
       min-height: 420px;
+      border-radius: 0 0 0 18px;
+      border-right: 1px solid #ffdcea;
+      background: #fff8fd;
+    }
+
+    .leaflet-container {
+      font-family: "Nunito", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink);
+    }
+
+    .leaflet-control-zoom a {
+      background: #fff5fb;
+      color: #a04a75;
+      border-bottom: 1px solid #ffd2e5;
+      width: 34px;
+      height: 34px;
+      line-height: 34px;
+      border-radius: 999px;
+      box-shadow: 0 5px 10px rgba(255, 143, 177, 0.2);
+      transition: transform 120ms ease, background-color 120ms ease;
+    }
+
+    .leaflet-control-zoom {
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .leaflet-control-zoom a:hover {
+      background: #ffe7f3;
+      transform: translateY(-1px);
+    }
+
+    .leaflet-control-zoom a:first-child {
+      border-bottom: 1px solid #ffd2e5;
+    }
+
+    .leaflet-control-zoom a:last-child {
+      border-bottom: none;
+    }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 14px;
+      border: 1px solid #ffd7e8;
+      box-shadow: 0 8px 20px rgba(255, 145, 187, 0.22);
+      background: #fffdf8;
+      color: var(--ink);
+    }
+
+    .leaflet-popup-tip {
+      background: #fffdf8;
+      border: 1px solid #ffd7e8;
+    }
+
+    .snack-pin-wrap {
+      background: transparent;
+      border: none;
+    }
+
+    .snack-pin {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border: 2px solid #fff;
+      box-shadow: 0 7px 14px rgba(91, 53, 83, 0.2);
+    }
+
+    .snack-pin::after {
+      content: "";
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.88);
+      top: 5px;
+      left: 7px;
+    }
+
+    .snack-pin::before {
+      content: "✦";
+      position: absolute;
+      right: -7px;
+      top: -8px;
+      font-size: 10px;
+      color: #ff9ac1;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.75);
+      animation: twinkle 1.9s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .snack-pin.user {
+      background: linear-gradient(145deg, #fff2b8, #ffd6ea);
+    }
+
+    .snack-pin.store {
+      background: linear-gradient(145deg, #ffe0ef, #ffd3b4);
+    }
+
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: 0.35;
+        transform: scale(0.8) rotate(0deg);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.05) rotate(14deg);
+      }
     }
 
     .store-panel {
@@ -344,6 +489,96 @@
       font-size: 0.9rem;
     }
 
+    .suggestion-layout {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.9rem;
+    }
+
+    .suggestion-panel {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fffdf8;
+      padding: 0.9rem;
+      box-shadow: 0 8px 18px rgba(255, 145, 187, 0.12);
+    }
+
+    .suggestion-panel h2 {
+      margin: 0 0 0.3rem;
+      font-size: 1.08rem;
+      color: #8c3a68;
+    }
+
+    .suggestion-help {
+      margin: 0 0 0.8rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .suggestion-form {
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .suggestion-form label {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #7f3a62;
+    }
+
+    .suggestion-form input,
+    .suggestion-form textarea {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.6rem 0.7rem;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+      cursor: text;
+    }
+
+    .suggestion-form textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .suggestion-status {
+      margin: 0.25rem 0 0;
+      min-height: 1.2em;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .suggestion-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 0.6rem;
+      max-height: 360px;
+      overflow: auto;
+    }
+
+    .suggestion-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.65rem;
+      background: #fff;
+    }
+
+    .suggestion-item p {
+      margin: 0.25rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .suggestion-empty {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin: 0;
+    }
+
     @media (max-width: 900px) {
       .modal-body {
         grid-template-columns: 1fr;
@@ -351,6 +586,9 @@
       .store-panel {
         border-left: none;
         border-top: 1px solid var(--line);
+      }
+      .suggestion-layout {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -360,8 +598,13 @@
     <header>
       <h1>SnackSearch</h1>
       <p class="subtitle">Find popular Asian snacks, browse products, and open a map to locate nearby stores carrying each item.</p>
+      <div class="top-nav" role="tablist" aria-label="App pages">
+        <button id="browseTabBtn" class="nav-btn active" type="button" role="tab" aria-selected="true">Browse Snacks</button>
+        <button id="suggestTabBtn" class="nav-btn" type="button" role="tab" aria-selected="false">Suggest a Snack</button>
+      </div>
     </header>
 
+    <div id="browsePage" class="page active">
     <section aria-label="Snack search">
       <div class="search-row">
         <input id="searchInput" type="search" placeholder="Search snacks by name, flavor, country, or tag..." aria-label="Search snacks">
@@ -383,6 +626,32 @@
 
     <section class="grid" id="snackGrid" aria-label="Snack results"></section>
     <p class="empty" id="emptyState">No snacks found. Try another search or category.</p>
+    </div>
+
+    <section id="suggestPage" class="page" aria-label="Snack suggestion page">
+      <div class="suggestion-layout">
+        <article class="suggestion-panel">
+          <h2>Suggest a snack we should add</h2>
+          <p class="suggestion-help">Request snacks you want us to include next. Suggestions are saved on this browser.</p>
+          <form id="suggestionForm" class="suggestion-form">
+            <label for="suggestSnackName">Snack name</label>
+            <input id="suggestSnackName" type="text" required placeholder="e.g. Koala's March Strawberry">
+            <label for="suggestSnackBrand">Brand (optional)</label>
+            <input id="suggestSnackBrand" type="text" placeholder="e.g. Lotte">
+            <label for="suggestSnackDetails">Details (optional)</label>
+            <textarea id="suggestSnackDetails" placeholder="Flavor, country, where you usually buy it, etc."></textarea>
+            <button class="soft-btn" type="submit">Send suggestion</button>
+            <p class="suggestion-status" id="suggestionStatus" aria-live="polite"></p>
+          </form>
+        </article>
+        <article class="suggestion-panel">
+          <h2>Recent suggestions</h2>
+          <p class="suggestion-help">This helps track what people are searching for most.</p>
+          <ul class="suggestion-list" id="suggestionList"></ul>
+          <p class="suggestion-empty" id="suggestionEmpty">No suggestions yet. Be the first to add one!</p>
+        </article>
+      </div>
+    </section>
   </div>
 
   <div class="overlay" id="mapOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -441,6 +710,17 @@
     const setAddressLocationBtn = document.getElementById("setAddressLocationBtn");
     const addressInput = document.getElementById("addressInput");
     const locationStatus = document.getElementById("locationStatus");
+    const browseTabBtn = document.getElementById("browseTabBtn");
+    const suggestTabBtn = document.getElementById("suggestTabBtn");
+    const browsePage = document.getElementById("browsePage");
+    const suggestPage = document.getElementById("suggestPage");
+    const suggestionForm = document.getElementById("suggestionForm");
+    const suggestSnackName = document.getElementById("suggestSnackName");
+    const suggestSnackBrand = document.getElementById("suggestSnackBrand");
+    const suggestSnackDetails = document.getElementById("suggestSnackDetails");
+    const suggestionStatus = document.getElementById("suggestionStatus");
+    const suggestionList = document.getElementById("suggestionList");
+    const suggestionEmpty = document.getElementById("suggestionEmpty");
 
     const categories = ["All", ...new Set(snacks.map((s) => s.category))];
     let activeCategory = "All";
@@ -452,6 +732,17 @@
       lng: -122.4089,
       label: "Default location (San Francisco, CA)"
     };
+    const suggestionStorageKey = "snacksearch_suggestions_v1";
+
+    function createCuteMarkerIcon(type, emoji) {
+      return L.divIcon({
+        className: "snack-pin-wrap",
+        html: `<div class="snack-pin ${type}">${emoji}</div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17],
+        popupAnchor: [0, -16]
+      });
+    }
 
     function milesBetween(lat1, lng1, lat2, lng2) {
       const toRad = (value) => (value * Math.PI) / 180;
@@ -489,6 +780,60 @@
         });
         categoryChips.appendChild(btn);
       });
+    }
+
+    function switchPage(pageId) {
+      const onBrowse = pageId === "browse";
+      browsePage.classList.toggle("active", onBrowse);
+      suggestPage.classList.toggle("active", !onBrowse);
+      browseTabBtn.classList.toggle("active", onBrowse);
+      suggestTabBtn.classList.toggle("active", !onBrowse);
+      browseTabBtn.setAttribute("aria-selected", onBrowse ? "true" : "false");
+      suggestTabBtn.setAttribute("aria-selected", onBrowse ? "false" : "true");
+    }
+
+    function readSuggestions() {
+      try {
+        const raw = localStorage.getItem(suggestionStorageKey);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function writeSuggestions(suggestions) {
+      localStorage.setItem(suggestionStorageKey, JSON.stringify(suggestions));
+    }
+
+    function renderSuggestions() {
+      const suggestions = readSuggestions();
+      suggestionList.innerHTML = suggestions.map((item) => `
+        <li class="suggestion-item">
+          <strong>${item.name}</strong>${item.brand ? ` - ${item.brand}` : ""}
+          <p>${item.details || "No extra details provided."}</p>
+        </li>
+      `).join("");
+      suggestionEmpty.style.display = suggestions.length ? "none" : "block";
+    }
+
+    function submitSuggestion(event) {
+      event.preventDefault();
+      const name = suggestSnackName.value.trim();
+      const brand = suggestSnackBrand.value.trim();
+      const details = suggestSnackDetails.value.trim();
+
+      if (!name) {
+        suggestionStatus.textContent = "Please enter a snack name first.";
+        return;
+      }
+
+      const suggestions = readSuggestions();
+      suggestions.unshift({ name, brand, details, createdAt: Date.now() });
+      writeSuggestions(suggestions.slice(0, 40));
+      renderSuggestions();
+      suggestionForm.reset();
+      suggestionStatus.textContent = "Thanks! Your snack suggestion has been saved.";
     }
 
     function matchesSearch(snack, term) {
@@ -555,9 +900,9 @@
 
       if (!map) {
         map = L.map("map").setView([userLocation.lat, userLocation.lng], 13);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
           maxZoom: 19,
-          attribution: "&copy; OpenStreetMap contributors"
+          attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
         }).addTo(map);
       }
 
@@ -566,12 +911,16 @@
       if (userLocationMarker) {
         userLocationMarker.remove();
       }
-      userLocationMarker = L.marker([userLocation.lat, userLocation.lng])
+      userLocationMarker = L.marker([userLocation.lat, userLocation.lng], {
+        icon: createCuteMarkerIcon("user", "🐰")
+      })
         .addTo(map)
         .bindPopup(`<strong>You are here</strong><br>${userLocation.label}`);
 
       stockists.forEach((store) => {
-        const marker = L.marker([store.lat, store.lng])
+        const marker = L.marker([store.lat, store.lng], {
+          icon: createCuteMarkerIcon("store", snack.emoji || "🍡")
+        })
           .addTo(map)
           .bindPopup(`<strong>${store.name}</strong><br>${snack.name}<br>${store.distanceMi.toFixed(1)} mi away`);
         currentMarkers.push(marker);
@@ -658,6 +1007,9 @@
     }
 
     searchInput.addEventListener("input", renderSnacks);
+    browseTabBtn.addEventListener("click", () => switchPage("browse"));
+    suggestTabBtn.addEventListener("click", () => switchPage("suggest"));
+    suggestionForm.addEventListener("submit", submitSuggestion);
     useCurrentLocationBtn.addEventListener("click", useCurrentLocation);
     setAddressLocationBtn.addEventListener("click", trySetAddressLocation);
     addressInput.addEventListener("keydown", (event) => {
@@ -679,6 +1031,7 @@
 
     createCategoryChips();
     renderSnacks();
+    renderSuggestions();
   </script>
 </body>
 </html>
