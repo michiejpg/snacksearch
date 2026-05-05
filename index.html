@@ -300,6 +300,69 @@
       background: var(--accent-dark);
     }
 
+    .cart-btn {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #ffffff;
+      color: #0f4aa3;
+      padding: 0.55rem 0.7rem;
+      font-weight: 700;
+      cursor: var(--rabbit-cursor) 6 4, pointer;
+    }
+
+    .cart-btn.in-cart {
+      background: #e8f1ff;
+      border-color: #9db8e4;
+      color: #0b377a;
+    }
+
+    .cart-panel {
+      margin-top: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #ffffff;
+      padding: 0.8rem;
+      box-shadow: 0 6px 14px rgba(15, 74, 163, 0.1);
+    }
+
+    .cart-title {
+      margin: 0;
+      font-size: 1rem;
+      color: #0f4aa3;
+      font-weight: 700;
+    }
+
+    .cart-meta {
+      margin: 0.3rem 0 0.6rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .cart-items {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .cart-items li {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f7faff;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.84rem;
+      color: #0b377a;
+    }
+
+    .cart-actions {
+      margin-top: 0.7rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
     .empty {
       margin-top: 2rem;
       text-align: center;
@@ -637,6 +700,15 @@
 
     <section class="grid" id="snackGrid" aria-label="Snack results"></section>
     <p class="empty" id="emptyState">No snacks found. Try another search or category.</p>
+    <section class="cart-panel" aria-label="Shopping cart">
+      <p class="cart-title" id="cartTitle">Cart (0)</p>
+      <p class="cart-meta" id="cartMeta">Add snacks to your cart, then find stores that have everything.</p>
+      <ul class="cart-items" id="cartItems"></ul>
+      <div class="cart-actions">
+        <button id="findCartStoresBtn" class="soft-btn" type="button">Find stores for cart</button>
+        <button id="clearCartBtn" class="cart-btn" type="button">Clear cart</button>
+      </div>
+    </section>
     </div>
 
     <section id="suggestPage" class="page" aria-label="Snack suggestion page">
@@ -738,12 +810,18 @@
     const suggestionStatus = document.getElementById("suggestionStatus");
     const suggestionList = document.getElementById("suggestionList");
     const suggestionEmpty = document.getElementById("suggestionEmpty");
+    const cartTitle = document.getElementById("cartTitle");
+    const cartMeta = document.getElementById("cartMeta");
+    const cartItems = document.getElementById("cartItems");
+    const findCartStoresBtn = document.getElementById("findCartStoresBtn");
+    const clearCartBtn = document.getElementById("clearCartBtn");
 
     const categories = ["All", ...new Set(snacks.map((s) => s.category))];
     let activeCategory = "All";
     let map;
     let currentMarkers = [];
     let userLocationMarker = null;
+    const cart = new Set();
     let userLocation = {
       lat: 37.3382,
       lng: -121.8863,
@@ -859,6 +937,32 @@
       return pool.includes(query);
     }
 
+    function renderCart() {
+      const ids = [...cart];
+      const cartSnacks = snacks.filter((snack) => ids.includes(snack.id));
+      cartTitle.textContent = `Cart (${cartSnacks.length})`;
+      cartMeta.textContent = cartSnacks.length
+        ? "Ready to search for stores carrying all selected snacks."
+        : "Add snacks to your cart, then find stores that have everything.";
+      cartItems.innerHTML = cartSnacks.map((snack) => `<li>${snack.name}</li>`).join("");
+    }
+
+    function toggleCartItem(snackId) {
+      if (cart.has(snackId)) {
+        cart.delete(snackId);
+      } else {
+        cart.add(snackId);
+      }
+      renderCart();
+      renderSnacks();
+    }
+
+    function clearCart() {
+      cart.clear();
+      renderCart();
+      renderSnacks();
+    }
+
     function renderSnacks() {
       const searchTerm = searchInput.value.trim();
       const filtered = snacks.filter((snack) => {
@@ -884,9 +988,14 @@
           <h3 class="name">${snack.name}</h3>
           <p class="desc">${snack.description}</p>
           <p class="price">General price: ${snack.price || "Varies by store"}</p>
+          <button class="cart-btn ${cart.has(snack.id) ? "in-cart" : ""}" data-cart-id="${snack.id}" type="button">
+            ${cart.has(snack.id) ? "Added to cart" : "Add to cart"}
+          </button>
           <button class="map-btn" data-id="${snack.id}" type="button">View nearby stores on map</button>
         `;
+        const cartBtn = card.querySelector(".cart-btn");
         const mapBtn = card.querySelector(".map-btn");
+        cartBtn.addEventListener("click", () => toggleCartItem(snack.id));
         mapBtn.addEventListener("click", () => openSnackMap(snack));
         snackGrid.appendChild(card);
       });
@@ -942,6 +1051,74 @@
         })
           .addTo(map)
           .bindPopup(`<strong>${store.name}</strong><br>${snack.name}<br>${store.distanceMi.toFixed(1)} mi away<br>General price: ${snack.price || "Varies by store"}`);
+        currentMarkers.push(marker);
+      });
+
+      if (stockists.length) {
+        const bounds = L.latLngBounds([
+          [userLocation.lat, userLocation.lng],
+          ...stockists.map((store) => [store.lat, store.lng])
+        ]);
+        map.fitBounds(bounds.pad(0.25));
+      } else {
+        map.setView([userLocation.lat, userLocation.lng], 12);
+      }
+
+      setTimeout(() => map.invalidateSize(), 0);
+    }
+
+    function openCartMap() {
+      const selectedSnacks = snacks.filter((snack) => cart.has(snack.id));
+      if (!selectedSnacks.length) {
+        cartMeta.textContent = "Your cart is empty. Add at least one snack first.";
+        return;
+      }
+
+      const selectedIds = selectedSnacks.map((snack) => snack.id);
+      const stockists = stores
+        .filter((store) => selectedIds.every((id) => store.inventory.includes(id)))
+        .map((store) => ({ ...store, distanceMi: getDistanceFromUser(store) }))
+        .sort((a, b) => a.distanceMi - b.distanceMi);
+
+      const snackNames = selectedSnacks.map((snack) => snack.name).join(", ");
+      modalTitle.textContent = "Stores with all cart snacks";
+      mapOverlay.style.display = "flex";
+
+      storePanel.innerHTML = stockists.length
+        ? stockists.map((store) => `
+            <div class="store-card">
+              <strong>${store.name}</strong>
+              <p>Approx. distance: ${store.distanceMi.toFixed(1)} mi</p>
+              <p>Has all: ${snackNames}</p>
+            </div>
+          `).join("")
+        : "<p>No nearby stores currently match all snacks in your cart.</p>";
+
+      if (!map) {
+        map = L.map("map").setView([userLocation.lat, userLocation.lng], 13);
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+          maxZoom: 19,
+          attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
+        }).addTo(map);
+      }
+
+      resetMarkers();
+
+      if (userLocationMarker) {
+        userLocationMarker.remove();
+      }
+      userLocationMarker = L.marker([userLocation.lat, userLocation.lng], {
+        icon: createCuteMarkerIcon("user", "🐰")
+      })
+        .addTo(map)
+        .bindPopup(`<strong>You are here</strong><br>${userLocation.label}`);
+
+      stockists.forEach((store) => {
+        const marker = L.marker([store.lat, store.lng], {
+          icon: createCuteMarkerIcon("store", "🛒")
+        })
+          .addTo(map)
+          .bindPopup(`<strong>${store.name}</strong><br>Has all cart snacks<br>${store.distanceMi.toFixed(1)} mi away`);
         currentMarkers.push(marker);
       });
 
@@ -1029,6 +1206,8 @@
     browseTabBtn.addEventListener("click", () => switchPage("browse"));
     suggestTabBtn.addEventListener("click", () => switchPage("suggest"));
     suggestionForm.addEventListener("submit", submitSuggestion);
+    findCartStoresBtn.addEventListener("click", openCartMap);
+    clearCartBtn.addEventListener("click", clearCart);
     useCurrentLocationBtn.addEventListener("click", useCurrentLocation);
     setAddressLocationBtn.addEventListener("click", trySetAddressLocation);
     addressInput.addEventListener("keydown", (event) => {
@@ -1049,6 +1228,7 @@
     });
 
     createCategoryChips();
+    renderCart();
     renderSnacks();
     renderSuggestions();
   </script>
